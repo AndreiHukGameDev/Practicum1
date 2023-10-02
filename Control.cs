@@ -1,38 +1,68 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Control : MonoBehaviour
 {
-    // Start is called before the first frame update
-    public float speed = 20f;
-    void Start()
-    {
-         
-    }
+    private float speed = 20f;
+    public Camera camera;
+    public Camera cameraHoodCar;
 
-    // Update is called once per frame
+    public GameObject player;
+
+    private void Start()
+    {
+    }
     void FixedUpdate()
     {
-        speed += 0.2f * Time.deltaTime;
-        if (Input.GetKey(KeyCode.W))
+        if (Input.GetKey(KeyCode.A) && player.transform.rotation.y >= -0.425 && player.transform.position.x >= -8.6)
         {
-            transform.Translate(Vector3.forward * speed * Time.deltaTime);
+            player.transform.Translate(Vector3.left * speed * Time.deltaTime);
+
+            player.transform.Rotate(Vector3.down * (speed * 2) * Time.deltaTime);
+            if (player.transform.position.z < 0)
+            {
+                player.transform.Translate(Vector3.forward * (speed * 0.25f) * Time.deltaTime);
+
+            }
         }
-        if (Input.GetKey(KeyCode.S))
+
+        if (Input.GetKey(KeyCode.D) && player.transform.rotation.y <= 0.425 && player.transform.position.x <= 8.6)
         {
-            transform.Translate(Vector3.back * speed * Time.deltaTime);
+            player.transform.Translate(Vector3.right * speed * Time.deltaTime);
+            player.transform.Rotate(Vector3.up * (speed * 2) * Time.deltaTime);
+            if (player.transform.position.z < 0)
+            {
+                player.transform.Translate(Vector3.forward * (speed * 0.25f) * Time.deltaTime);
+
+            }
         }
-        if (Input.GetKey(KeyCode.A))
+
+        if ((Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.D)) && player.transform.rotation.y != 0)
         {
-            transform.Rotate(Vector3.down * (speed * 6) * Time.deltaTime);
+            player.transform.rotation = Quaternion.Euler(0, 0, 0);
         }
-        if (Input.GetKey(KeyCode.D))
+        //Change camera
+        if (Input.GetKey(KeyCode.C))
         {
-            transform.Rotate(Vector3.up * (speed * 6) * Time.deltaTime);
+
+            cameraHoodCar.enabled = !cameraHoodCar.enabled;
+            camera.enabled = !camera.enabled;
 
         }
-        Debug.Log(speed.ToString());
-        
+    }
+    //ACCIDENT
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag != "Road")
+        {
+            Destroy(collision.gameObject);
+            MultyPlayerScoreCounter.MinusCount(player);
+            ScoreCounter.MinusCount();
+        }
     }
 }
+

@@ -8,7 +8,7 @@ public class FollowPlayer : MonoBehaviour
     public GameObject firstMarker;
     public GameObject player;
     
-    private Vector3 offset = new Vector3 (0, 5, -10);
+    private Vector3 offset = new Vector3 (0, 5, -25);
 
     
     void LateUpdate()
